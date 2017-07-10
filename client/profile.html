@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Profile</title>
+  <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- Bootstrap Core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Custom CSS -->
+  <link href="css/sb-admin.css" rel="stylesheet">
+
+  <!-- Morris Charts CSS -->
+  <link href="css/plugins/morris.css" rel="stylesheet">
+
+  <!-- Custom Fonts -->
+  <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+</head>
+
+<body>
+
+  <div id="profile">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-light  navbar-fixed-top" style="background-color: orange" role="navigation">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+        <a class="navbar-brand" href="#">{{ username }}</a>
+      </div>
+      <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul class="nav navbar-nav side-nav">
+          <li>
+            <a href="index.html"><i class="fa fa-fw fa-dashboard"></i>Home</a>
+          </li>
+          <li class="active">
+            <a href="profile.html"><i class="fa fa-fw fa-table"></i>Profile</a>
+          </li>
+          <li>
+            <a v-on:click="logout"><i class="fa fa-fw fa-edit"></i>Logout</a>
+          </li>
+        </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+    </nav>
+
+    <div id="page-wrapper">
+
+      <div class="container-fluid">
+
+        <!-- Page Heading -->
+
+        <div class="row">
+
+          <div class="col-lg-6">
+            <div class="form-area">
+
+              <div id="successful_register" class="alert alert-success">
+                <strong>Success Register!</strong>
+              </div>
+              <form role="form">
+                <br style="clear:both">
+                <br>
+                <h3 style="margin-bottom: 25px; text-align: center;">Profile User</h3>
+                <div class="form-group">
+                  <input type="text" v-model="username"  class="form-control" id="username" name="username" placeholder="Username" required value="username">
+                </div>
+                <div class="form-group">
+                  <input type="password" v-model="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" v-model="phone" class="form-control" id="phone" name="phone" placeholder="phone" required>
+                </div>
+                <div class="form-group">
+                  <input type="text" v-model="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                  <textarea v-model="address" class="form-control" type="textarea" id="address" placeholder="Address" maxlength="140" rows="7"></textarea>
+                </div>
+
+                <a v-on:click="saveData" id="submit" name="submit" class="btn btn-primary pull-right">Save</a>
+              </form>
+            </div>
+          </div>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.container-fluid -->
+
+    </div>
+    <!-- /#page-wrapper -->
+
+  </div>
+  <!-- /#wrapper -->
+
+  <!-- jQuery -->
+  <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+  <script>
+    var app = new Vue({
+      el: '#profile',
+       data: {
+        username: '',
+        password: '',
+        phone: '',
+        email: '',
+        address: '',
+        _id: ''
+      },
+      methods: {
+        saveData: function() {
+          axios.put('http://localhost:3000/api/users/' + this._id, {
+              // username: data.item_id,
+              // password: data.item_name,
+              phone: app.phone,
+              email: app.email,
+              address: app.address
+
+            })
+            .then(function(response) {
+              console.log(response);
+              $('#successful_register').show();
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        },
+        seedData: function() {
+          axios.get('http://localhost:3000/api/users/' + this._id)
+            .then(function(response) {
+              console.log(response.data);
+              app.username = response.data.username;
+              app.password = response.data.password;
+              app.phone = response.data.phone;
+              app.email = response.data.email;
+              app.address = response.data.address;
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+       },
+       logout() {
+            localStorage.removeItem('token')
+            localStorage.removeItem('data')
+            window.location.href = 'login.html'
+       }
+
+      },
+      created: function() {
+        $('#successful_register').hide();
+        var data = localStorage.getItem('data');
+        var token = localStorage.getItem('token');
+        this.validate(token);
+        data = JSON.parse(data);
+        this.username = data.username;
+        console.log(data._id);
+        this._id = data._id;
+        this.seedData();
+      }
+    })
+  </script>
+  <style media="screen" scope>
+       #profile {
+            width: 80%;
+            padding-left: 250px
+       }
+  </style>
+</body>
+
+</html>

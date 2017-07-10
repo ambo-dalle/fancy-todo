@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Fancy Todo</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+  <div id="login">
+       <!-- Navigation -->
+       <nav class="navbar navbar-light  navbar-fixed-top" style="background-color: orange" role="navigation">
+         <!-- Brand and toggle get grouped for better mobile display -->
+         <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                       <span class="sr-only">Toggle navigation</span>
+                       <span class="icon-bar"></span>
+                       <span class="icon-bar"></span>
+                       <span class="icon-bar"></span>
+                  </button>
+          <a class="navbar-brand" href="#">{{ username }}</a>
+         </div>
+         <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+         <div class="collapse navbar-collapse navbar-ex1-collapse">
+          <ul class="nav navbar-nav side-nav">
+            <li class="active" >
+              <a href="/"><i class="fa fa-fw fa-dashboard" ></i>Home</a>
+            </li>
+
+            <li>
+              <a href="register.html"><i class="fa fa-fw fa-edit"></i>Register</a>
+            </li>
+
+
+          </ul>
+         </div>
+         <!-- /.navbar-collapse -->
+       </nav>
+       <br>
+       <br>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6">
+          <h1>{{ title }}</h1>
+          <!-- <form> -->
+            <div class="form-group">
+              <label for="username">Username:</label>
+              <input v-model="username" type="text" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+              <label for="email">Email:</label>
+              <input v-model="email" type="text" class="form-control" name="email">
+            </div>
+            <div class="form-group">
+              <label for="password">Password:</label>
+              <input v-model="password" type="password" class="form-control" name="password">
+            </div>
+
+            <div class="container">
+                 <fb:login-button scope="public_profile,email,user_photos" class="btn btn-facebook btn-lg" onlogin="checkLoginState();">Sign With Facebook</fb:login-button>
+                 <div id="status"></div>
+                 <!-- Login with http://localhost:8080/ -->
+                 <!-- <input type="button" value="Logout" onclick="Logout();" />
+                 <div id="status"></div> -->
+
+            </div>
+
+            <!-- <button scope="public_profile,email,user_photos" title="Facebook" type="submit" class="btn btn-facebook btn-lg" onlogin="checkLoginState()"><i class="fa fa-facebook fa-fw" ></i> Sign in with Facebook </button> -->
+
+            <br>
+            <button v-on:click="onLogin" type="submit" class="btn btn-success" style="width:250px; height:40px; align:center;">Submit</button>
+          <!-- </form> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    // This is called with the results from from FB.getLoginStatus().
+    function statusChangeCallback(response) {
+      console.log('statusChangeCallback');
+      console.log(response);
+      // The response object is returned with a status field that lets the
+      // app know the current login status of the person.
+      // Full docs on the response object can be found in the documentation
+      // for FB.getLoginStatus().
+      if (response.status === 'connected') {
+        // Logged into your app and Facebook.
+        testAPI();
+      } else {
+        // The person is not logged into your app or we are unable to tell.
+        document.getElementById('status').innerHTML = 'Please log ' +
+          'into this app.';
+      }
+    }
+
+    // This function is called when someone finishes with the Login
+    // Button.  See the onlogin handler attached to it in the sample
+    // code below.
+    function checkLoginState() {
+      FB.getLoginStatus(function(response) {
+        statusChangeCallback(response);
+      });
+    }
+
+
+
+
+    window.fbAsyncInit = function() {
+    FB.init({
+      appId      : 135815470314546,
+      cookie     : true,  // enable cookies to allow the server to access
+                          // the session
+      xfbml      : true,  // parse social plugins on this page
+      version    : 'v2.8' // use graph api version 2.8
+    });
+
+    // Now that we've initialized the JavaScript SDK, we call
+    // FB.getLoginStatus().  This function gets the state of the
+    // person visiting this page and can return one of three states to
+    // the callback you provide.  They can be:
+    //
+    // 1. Logged into your app ('connected')
+    // 2. Logged into Facebook, but not your app ('not_authorized')
+    // 3. Not logged into Facebook and can't tell if they are logged into
+    //    your app or not.
+    //
+    // These three cases are handled in the callback function.
+
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+
+    };
+
+    // Load the SDK asynchronously
+    (function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+
+    // Here we run a very simple test of the Graph API after login is
+    // successful.  See statusChangeCallback() for when this call is made.
+         function testAPI() {
+           console.log('Welcome!  Fetching your information.... ');
+           FB.api('/me', {fields: 'name, email'}, function(response) {
+             console.log('Successful login for: ' + response.name);
+             document.getElementById('status').innerHTML =
+               'Thanks for logging in, ' + response.name + '!';
+
+               localStorage.setItem('responseFb', JSON.stringify(response))
+               var identity = JSON.parse(localStorage.getItem('responseFb'))
+               console.log('identity '+ JSON.stringify(identity));
+               console.log('stlh indetity');
+               axios.post('http://localhost:3000/api/users/signinfacebook',{
+                 email : identity.email
+               //   username : identity.username
+               })
+               .then((result)=>{
+                    console.log('ini result '+ result);
+                 localStorage.setItem('token', result.data.token)
+               //   window.location.href="/index.html"
+               })
+               .catch((err)=>{
+                 console.log(err)
+               })
+                 window.location.href="/index.html"
+
+           });
+
+         }
+
+         function Logout() {
+           FB.logout(function () { document.location.reload(); });
+         }
+
+
+  </script>
+
+
+  <script>
+    var app = new Vue({
+      el: '#login',
+      data: {
+             title: 'Login Page',
+             username : '',
+             email : '',
+             password: '',
+             message: ''
+      },
+      methods: {
+        onLogin: function() {
+          let self = this;
+          axios.post('http://localhost:3000/api/users/signin', {
+            username: self.username,
+            email : self.email,
+            password: self.password
+          })
+          .then(response => {
+              self.username = ''
+              self.email = ''
+              localStorage.setItem('token', response.data.token)
+              window.location.href = '/index.html'
+          })
+          .catch(err => {
+               console.log(err);
+          })
+        },
+        validation() {
+             var self = this
+             axios.get('http://localhost:3000/api/users/validation', {
+                  headers : {token : localStorage.getItem('token')}
+             })
+             .then(response=>{
+                  console.log(response.data);
+                  if(response.data.email) {
+                       window.location.href='/index.html'
+                  }
+             })
+             .catch((err) => {
+                  console.log(err);
+             })
+        }
+
+      },
+
+      created: function() {
+           this.validation()
+      }
+    })
+  </script>
+<style media="screen" scope>
+     #login {
+          width: 80%;
+          padding-left: 250px
+     }
+     /*.btn-facebook {
+	  background: #3B5998;
+	  border-radius: 5px;
+	  color: #fff;
+	  border-width: 1px;
+	  border-style: solid;
+	  border-color: #263961;
+       width: 500px
+	}
+	.btn-facebook:link, .btn-facebook:visited {
+	  color: #fff;
+	}
+	.btn-facebook:active, .btn-facebook:hover {
+	  background: #263961;
+	  color: #fff;
+	}
+     button {
+          align : center;
+     }*/
+</style>
+</body>
+</html>

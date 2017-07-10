@@ -1,0 +1,29 @@
+.completed {
+  background-color: #00FF80;
+  margin: 10px;
+  width: 350px;
+  height: 200px;
+  /*cursor: pointer;*/
+  border-radius: 20px;
+}
+
+.uncompleted {
+  background-color: #FF6666;
+  margin: 10px;
+  width: 350px;
+  height: 200px;
+  /*cursor: pointer;*/
+  border-radius: 20px;
+}
+
+.navbar-default {
+  /*background-color: #00FF80; */
+}
+
+.navbar-default .navbar-brand {
+  /*color: #FF6666;*/
+}
+
+.navbar-default .navbar-nav>li>a {
+  /*color: #FF6666;*/
+}
